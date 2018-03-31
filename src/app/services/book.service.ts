@@ -64,6 +64,18 @@ export class BookService {
 	
 	// Suppression d'un livre
 	removeBook(book: Book) {
+		// On traite l'existence d'une photo, qu'il faut supprimer
+		if(book.photo){
+			const storageRef = firebase.storage().refFromURL(book.photo);
+			storageRef.delete().then(
+				() => {
+					console.log("Photo removed : " + book.photo);
+				},
+				(error) => {
+					console.log("Erreur lors de la suppresion de " + book.photo + " : " + error);
+				}
+			);
+		}
 		const bookIndexToRemove = this.books.findIndex(
 			(bookEl) => {
 				if(bookEl === book) {
@@ -75,4 +87,27 @@ export class BookService {
 		this.saveBooks();
 		this.emitBooks();
 	}
-}
+	
+	// Upload d'une image à partir d'un fichier
+	uploadFile (file: File) {
+		return new Promise(
+			(resolve, reject) => {
+				const almostUniqueFileName = Date.now().toString(); //On crée un identifiant "unique" basé sur l'heure en millisecondes
+				const upload = firebase.storage().ref()
+					.child('images/' + almostUniqueFileName + file.name).put(file); //On définit la cible de l'upload et on déclenche
+				// Désormais, on écoute le changement d'état de l'upload
+				upload.on(firebase.storage.TaskEvent.STATE_CHANGED,
+					() => {
+						console.log('Chargement...');
+					},
+					(error) => {
+						console.log('Erreur pendant le chargement : ' + error);
+					},
+					() => {
+						resolve(upload.snapshot.downloadURL); // On récupére l'URL de l'image
+					}
+				);
+			}
+		);
+	}
+}	

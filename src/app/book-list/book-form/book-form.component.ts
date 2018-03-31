@@ -12,6 +12,9 @@ import { Router } from '@angular/router';
 export class BookFormComponent implements OnInit {
 
 	bookForm: FormGroup;
+	fileIsUploading: boolean = false;
+	fileUrl: string;
+	fileUploaded: boolean = false;
 	
   constructor(private formBuilder: FormBuilder,
 							private router: Router,
@@ -36,7 +39,29 @@ export class BookFormComponent implements OnInit {
 		const synopsis = this.bookForm.value['synopsis'];
 		const newBook = new Book(title, author);
 		newBook.synopsis = synopsis;
+		if(this.fileUrl && this.fileUrl !==''){
+			newBook.photo = this.fileUrl;
+		}
 		this.bookService.createBook(newBook);
 		this.router.navigate(['/books']);
+	}
+	
+	onUploadFile(file: File){
+		this.fileIsUploading = true;
+		this.bookService.uploadFile(file).then(
+			(url: string) => {
+				this.fileUrl = url;
+				this.fileIsUploading = false;
+				this.fileUploaded = true;
+			},
+			(error) => {
+				console.log("Erreur lors de l'upload du fichier : " + error);
+			}
+		);
+	}
+	
+	// On upload le fichier dès qu'il est sélectionné dans l'input File
+	detectFiles(event){
+		this.onUploadFile(event.target.files[0]);
 	}
 }

@@ -13,7 +13,7 @@ export class AppComponent {
 			authDomain: "pge-library.firebaseapp.com",
 			databaseURL: "https://pge-library.firebaseio.com",
 			projectId: "pge-library",
-			storageBucket: "",
+			storageBucket: "gs://pge-library.appspot.com/",
 			messagingSenderId: "377027468642"
 		};
 		firebase.initializeApp(config);
