@@ -22,14 +22,19 @@ export class BookService {
 	saveBooks(){
 		firebase.database().ref('/books').set(this.books);
 	}
-	constructor() { }
+	constructor() {
+		//Il faut appeler une première fois la méthode getBooks pour déclencher l'écoute de FireBase
+		this.getBooks();
+	}
 
 	// Récupération de tous les livres, avec la méthode .on qui va s'exécuter à chaque fois que la base de données sera modifiée
 	getBooks(){
+		console.log("On est dans BookService.getBooks()");
 		firebase.database().ref('/books')
 			.on('value', (data: DataSnapshot) => {
 				this.books = data.val ? data.val() : [];
 				this.emitBooks();
+				console.log("On vient de récupérer la liste");
 			}
 		);
 	}

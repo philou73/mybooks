@@ -25,7 +25,7 @@ export class BookListComponent implements OnInit, OnDestroy {
 			}
 		);
 		//Il ne faut pas oublier de lancer la première émission pour récupérer les livres !!!
-		// this.bookService.emitBooks();
+		this.bookService.emitBooks();
   }
 	
 	// On gère la navigation pour la création d'un nouveau livre
